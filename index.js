@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 
-app.get('/latest-link', async (req, res) => {
+app.get('/index.js', async (req, res) => {
   try {
     const response = await axios.get(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
       headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
