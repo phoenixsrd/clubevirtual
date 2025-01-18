@@ -1,30 +1,34 @@
-const express = require('express');
-const axios = require('axios');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
+const fetch = require('node-fetch');
+require('dotenv').config();
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 
-app.get('/index.js', async (req, res) => {
+async function getLatestRelease() {
   try {
-    const response = await axios.get(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
-      headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
+    const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'User-Agent': 'Node.js',
+      },
     });
 
-    const asset = response.data.assets[0];
-    if (!asset) {
-      return res.status(404).json({ error: 'Nenhum Arquivo Encontrado No Release.' });
+    if (!response.ok) {
+      console.error('Erro Ao Acessar A API Do GitHub:', await response.json());
+      return;
     }
 
-    res.json({ url: asset.browser_download_url });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro Ao Obter O Link Do Arquivo.' });
-  }
-});
+    const data = await response.json();
+    const asset = data.assets?.[0];
+    if (!asset) {
+      console.error('Nenhum Arquivo Encontrado No Release.');
+      return;
+    }
 
-app.listen(PORT, () => {
-  console.log(`Servidor Rodando Na Porta ${PORT}`);
-});
+    console.log('Link do arquivo:', asset.browser_download_url);
+  } catch (error) {
+    console.error('Erro Ao Buscar O Release:', error.message);
+  }
+}
+
+getLatestRelease();
