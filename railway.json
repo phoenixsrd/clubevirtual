@@ -1,0 +1,12 @@
+{
+  "name": "clubevirtual",
+  "services": [
+    {
+      "name": "api",
+      "build": {
+        "builder": "node"
+      },
+      "start": "node index.js"
+    }
+  ]
+}
